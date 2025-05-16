@@ -25,8 +25,10 @@
 #define MESH_NODE_BROADCAST			0xFFFFFFFF
 #define MESH_NODE_PRIMARY_CHANNEL	0
 
+// Send to Broadcast and Direct Addresses: Note, channels will only be dispatched if the BROADCAST address is specified, otherwise, the alert_channels 
+// will be ignored
 uint8_t alert_channels[] = { MESH_NODE_PRIMARY_CHANNEL };
-uint32_t alert_addrs[] = { MESH_NODE_PRIMARY_CHANNEL };
+uint32_t alert_addrs[] = { MESH_NODE_BROADCAST };
 
 // UART definitions
 #define UART_BUF_SIZE 1024
