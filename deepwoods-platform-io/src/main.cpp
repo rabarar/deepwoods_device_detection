@@ -22,8 +22,11 @@
 #include <esp_wifi.h>       // for promiscuous sniffing
 #include <Meshtastic.h>
 
-#define MESH_NODE_DEST    0xFFFFFFFF   // Broadcast to all nodes on channel
-#define MESH_NODE_CHANNEL 0
+#define MESH_NODE_BROADCAST			0xFFFFFFFF
+#define MESH_NODE_PRIMARY_CHANNEL	0
+
+uint8_t alert_channels[] = { MESH_NODE_PRIMARY_CHANNEL };
+uint32_t alert_addrs[] = { MESH_NODE_PRIMARY_CHANNEL };
 
 // UART definitions
 #define UART_BUF_SIZE 1024
@@ -158,12 +161,27 @@ static void enqueueFmt(const char* fmt, ...) {
         // Non-baseline detections -> UART1 only via Serial1
         MeshMsg m;
         memcpy(m.buf, buf, strlen(buf)+1);
-        m.dest = MESH_NODE_DEST;
-        m.channel = MESH_NODE_CHANNEL;
-        xQueueSend(meshQ, &m, portMAX_DELAY);
 
-        // also mirror detections to USB serial
-        Serial.printf("%s\r\n", buf);
+		// send to all channels and destinations specified
+		for (int i=0; i<sizeof(alert_addrs)/sizeof(uint32_t); i++) {
+			if alert_addrs[i] == MESH_NODE_BROADCAST {
+				for (int j=0;j<sizeof(alert_channels)/sizeof(uint8_t) {
+       				m.dest = MESH_NODE_BROADCAST;
+        			m.channel = alert_channels[j];
+        			xQueueSend(meshQ, &m, portMAX_DELAY);
+
+        			// also mirror detections to USB serial
+        			Serial.printf("%s sent to CHANNEL %d\r\n", buf, alert_channels[j]);
+				}
+			} else {
+       				m.dest = alert_addrs[i];
+        			m.channel = 0;
+        			xQueueSend(meshQ, &m, portMAX_DELAY);
+
+        			// also mirror detections to USB serial
+        			Serial.printf("%s sent to DEST %x\r\n", buf, alert_addrs[i]);
+			}
+		}
     } else {
         // All other logs -> USB serial via Arduino Serial
         Serial.printf("%s\r\n", buf);
