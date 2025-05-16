@@ -164,8 +164,8 @@ static void enqueueFmt(const char* fmt, ...) {
 
 		// send to all channels and destinations specified
 		for (int i=0; i<sizeof(alert_addrs)/sizeof(uint32_t); i++) {
-			if alert_addrs[i] == MESH_NODE_BROADCAST {
-				for (int j=0;j<sizeof(alert_channels)/sizeof(uint8_t) {
+			if (alert_addrs[i] == MESH_NODE_BROADCAST) {
+				for (int j=0;j<sizeof(alert_channels)/sizeof(uint8_t); i++) {
        				m.dest = MESH_NODE_BROADCAST;
         			m.channel = alert_channels[j];
         			xQueueSend(meshQ, &m, portMAX_DELAY);
